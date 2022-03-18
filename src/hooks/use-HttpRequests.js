@@ -52,7 +52,8 @@ const useFetchApi = () => {
       //setApiData()
       const data = await response.json();
       //setApiData(data);
-      changeDataViaFn(data,requestConfig.body);
+      changeDataViaFn(data)
+      //changeDataViaFn(data,requestConfig.body);
       //changeDataViaFn(data);
       //changeDataViaFn(data);
       //setIsLoading(false);

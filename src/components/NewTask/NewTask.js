@@ -34,7 +34,25 @@ const NewTask = (props) => {
   // const [error, setError] = useState(null);
   const {fetchData, error, isLoading} = useFetchApi();
     // Need to pass into body and the once request nade in fetch, use that to send up the created task via another function and props to App.js
-  const storeEnteredText = (taskText) =>
+  
+    // Handle task and this is the function which handles the data
+    const createTask = 
+    //useCallback(
+      // .bind() stores the value from taskText from the enterTaskHandler
+        // Need to search up more on .bind() to understand it
+          // taskText is a param from .bind(), but it's not actually created in use-HttpRequests.js
+            // created param by .bind()
+      (taskText, taskData) => {
+      console.log("Test New Task");
+      const generatedId = taskData.name; // firebase-specific => "name" contains generated id
+      //console.log(taskTextStored.text);
+      console.log(generatedId);
+      const createdTask = { id: generatedId, text: taskText};
+  
+      props.onAddTask(createdTask);
+    };
+
+    const enterTaskHandler = async(taskText) =>
   {
     fetchData({
             url:"https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json",
@@ -43,20 +61,9 @@ const NewTask = (props) => {
               'Content-Type': 'application/json'
             },
             body: {text: taskText}
-        }, taskHandler);
+        }, createTask.bind(null,taskText));
   }
   
-  const taskHandler = 
-  //useCallback(
-    (data,taskTextStored) => {
-    console.log("Test New Task");
-    const generatedId = data.name; // firebase-specific => "name" contains generated id
-    console.log(taskTextStored.text);
-    console.log(generatedId);
-    const createdTask = { id: generatedId, text: taskTextStored.text};
-
-    props.onAddTask(createdTask);
-  }
   //,[]);
 
     // const enterTaskHandler = async (taskText) => {
@@ -111,7 +118,7 @@ const NewTask = (props) => {
 
   return (
     <Section>
-      <TaskForm onEnterTask={storeEnteredText} loading={isLoading} />
+      <TaskForm onEnterTask={enterTaskHandler} loading={isLoading} />
       {error && <p>{error}</p>}
     </Section>
   );
