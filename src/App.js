@@ -1,27 +1,26 @@
 import React, { useEffect, useState, useCallback } from "react";
-import useAxiosApi from "./hooks/use-HttpRequests";
+import useFetchApi from "./hooks/use-HttpRequests";
 import Tasks from "./components/Tasks/Tasks";
 import NewTask from "./components/NewTask/NewTask";
 import axios from "axios";
 
 function App() {
+    //   const useData = useCallback((dataFromGetReq) => {
+    //   const loadedTasks = [];
+    //   for (const taskKey in dataFromGetReq) {
+    //     loadedTasks.push({ id: taskKey, text: dataFromGetReq[taskKey].text });
+    //   }
+    //     setTasks(loadedTasks);
+    //     console.log(loadedTasks);
+    // },[]);
+    const [tasks, setTasks] = useState([]);
   //const [isLoading, setIsLoading] = useState(false);
   //const [error, setError] = useState(null);
-  const [tasks, setTasks] = useState([]);
+  // const [tasks, setTasks] = useState([]);
   //const loadedTasks = [];
   //const method = "GET";
   //const headers = {};
-
-      const useData = useCallback((dataFromGetReq) => {
-      const loadedTasks = [];
-      for (const taskKey in dataFromGetReq) {
-        loadedTasks.push({ id: taskKey, text: dataFromGetReq[taskKey].text });
-      }
-        setTasks(loadedTasks);
-        console.log(loadedTasks);
-    },[]);
-
-    const method = "GET";
+    //const method = "GET";
   //const taskTestArr = [];
   //const fetchTasks = async () => {
   //setIsLoading(true);
@@ -52,14 +51,14 @@ function App() {
   //   //   "Content-Type": "application/json",
   //   // }
   // }
-  const { fetchData, error, isLoading } = useAxiosApi(
+  const { fetchData, error, isLoading } = useFetchApi(
     // You cannot send up an object via this or else it will cause an infinite loop, that's
       // why he sends it up via the function fetchData in the useEffect() below, - only send in object with properties for now
-    "https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com/tasks.json",
-    method,
-    //headers,
-    null,
-    useData
+    // "https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com/tasks.json",
+    // method,
+    // //headers,
+    // null,
+    // useData
   );
   // This supposedly would have went in the useAxiosApi call
   // {
@@ -186,7 +185,17 @@ function App() {
     //     console.log(loadedTasks);
     // },[]);
     // If useData in this, pass useData into fetchData()
-    fetchData();
+      const testUsingData = (dataFromGetReq) => {
+     // You can use callBack for outside this function at the top, but if it's in here, no useCallback() is necessary
+      const loadedTasks = [];
+      for (const taskKey in dataFromGetReq) {
+        loadedTasks.push({ id: taskKey, text: dataFromGetReq[taskKey].text });
+      }
+        setTasks(loadedTasks);
+        console.log(loadedTasks);
+    };
+    // Just pass in url for now, no need for other properties since it's only a GET request
+    fetchData({url: 'https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com/tasks.json'}, testUsingData);
       // You cannot use useCallback for the performData function above and place it in here
         // When this runs, it will call the function which will eventually change the tasks state
           // By changing the task state, the component will re-render and this useEffect() will run again and cause an infinite loop

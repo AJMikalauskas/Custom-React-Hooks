@@ -6,39 +6,41 @@ import { useState, useEffect, useCallback } from "react";
 //param test getReq, for showing regular fetch request or not
 // Replace multiple sent in params with just an object/dictionary or JSON object sent in with dot notation to select specifics
 // Function Param to use the data, but you can just be able to use a function in app.js to use the data correctly instead.
-const useAxiosApi = (url,method, body, changeDataViaFn ) => {
-  // param ??? body ??? changeDataViaFn ??? headers
+const useFetchApi = () => {
+  // param ??? body ??? changeDataViaFn ??? headers 
+    // Semi-correct answer using url, method, body, changeDataViaFn
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [apiData, setApiData] = useState(null);
+  //const [apiData, setApiData] = useState(null);
 
   //useEffect(() => {
   // (
   //useCallback(
   // const testFn = useCallback(async
   //useEffect(() => {
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (requestConfig,changeDataViaFn) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await fetch(
         //"https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json"
-        //requestConfig.url,
-        url,
+        requestConfig.url,
+        //url,
         {
-          method: method,
+              // The ?, : is a very effective way of doing things, object can only be sent into fetchData function not useAxiosApi
+            //method: method,
           //? method : "GET", 
-          //requestConfig.method ? requestConfig.method : "GET",
-          headers: {}, 
+          method: requestConfig.method ? requestConfig.method : "GET",
+          //headers: {}, 
           //? headers : {}, 
             //  {
             //     "Content-Type": "application/json",
             //   }
-            //requestConfig.headers ? requestConfig.headers : {},
-            body: body
+          headers: requestConfig.headers ? requestConfig.headers : {},
+            //body: body
             // JSON.stringify(body) 
             //? JSON.stringify(body) : null
-          //body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
+          body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
           // body: JSON.stringify({ text: textToSendInForPostReq })
         }
       );
@@ -49,8 +51,8 @@ const useAxiosApi = (url,method, body, changeDataViaFn ) => {
       //const data = await response?.data;
       //setApiData()
       const data = await response.json();
-      setApiData(data);
-      changeDataViaFn(data);
+      //setApiData(data);
+      changeDataViaFn(data,requestConfig.body);
       //changeDataViaFn(data);
       //changeDataViaFn(data);
       //setIsLoading(false);
@@ -74,11 +76,11 @@ const useAxiosApi = (url,method, body, changeDataViaFn ) => {
       //setIsLoading(false);
     }
     setIsLoading(false);
-  }, [body, changeDataViaFn, method, url]);
-  return { fetchData, error, isLoading, apiData };
+  }, []);
+  return { fetchData, error, isLoading };
 };
 
-export default useAxiosApi;
+export default useFetchApi;
 // try code
 //     if(getReq)
 //     {
