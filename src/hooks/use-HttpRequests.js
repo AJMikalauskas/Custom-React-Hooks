@@ -1,10 +1,13 @@
-import axios from "axios";
+//import axios from "axios";
 //React, useCallback
-import  { useState } from "react";
-import { useEffect } from "react/cjs/react.production.min";
+import { useState, useEffect, useCallback } from "react";
+//import { useEffect } from "react/cjs/react.production.min";
 
 //param test getReq, for showing regular fetch request or not
-const useAxiosApi = (url,method,textToSendInForPostReq) => {
+// Replace multiple sent in params with just an object/dictionary or JSON object sent in with dot notation to select specifics
+// Function Param to use the data, but you can just be able to use a function in app.js to use the data correctly instead.
+const useAxiosApi = (url,method, body, changeDataViaFn ) => {
+  // param ??? body ??? changeDataViaFn ??? headers
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [apiData, setApiData] = useState(null);
@@ -12,49 +15,48 @@ const useAxiosApi = (url,method,textToSendInForPostReq) => {
   //useEffect(() => {
   // (
   //useCallback(
-  // const testFn = useCallback(async 
-  useEffect(() => {
+  // const testFn = useCallback(async
+  //useEffect(() => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const fetchData = async() => {
     try {
-    //   const response = await fetch(
-    //     //"https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json"
-    //     url,
-    //     {
-    //       method: method,
-    //       body: JSON.stringify({ text: textToSendInForPostReq }),
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     }
-    //   );
-      //     if(getReq)
-      //     {
-      //         const response = await fetch("https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json");
-      //     }
-      //     else {
-      //   const response = await fetch(
-      //     "https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json",
-      //     {
-      //         requestInfoObj
-      //     }
-      //   )
-      // }
-      const response = await axios({
+      const response = await fetch(
+        //"https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json"
+        //requestConfig.url,
+        url,
+        {
           method: method,
-          url: url, 
-          data: textToSendInForPostReq
-      });
-    //   console.log(response);
-    //   if (!response.ok) {
-    //     throw new Error("Request failed!");
-    //   }
-      //const data = await response.json();
-      const data = await response?.data;
+          //? method : "GET", 
+          //requestConfig.method ? requestConfig.method : "GET",
+          headers: {}, 
+          //? headers : {}, 
+            //  {
+            //     "Content-Type": "application/json",
+            //   }
+            //requestConfig.headers ? requestConfig.headers : {},
+            body: body
+            // JSON.stringify(body) 
+            //? JSON.stringify(body) : null
+          //body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
+          // body: JSON.stringify({ text: textToSendInForPostReq })
+        }
+      );
+      // Code down below went here but commented out
+      if (!response.ok) {
+        throw new Error("Request Failed!");
+      }
+      //const data = await response?.data;
+      //setApiData()
+      const data = await response.json();
       setApiData(data);
-      console.log(data);
-      setIsLoading(false);
+      changeDataViaFn(data);
+      //changeDataViaFn(data);
+      //changeDataViaFn(data);
+      //setIsLoading(false);
+      //setApiData(data);
+      //console.log(data.name);
+      //setIsLoading(false);
       //   setDataStorage(data);
       // This is from NewTask.js
       //const generatedId = data.name; // firebase-specific => "name" contains generated id
@@ -69,25 +71,52 @@ const useAxiosApi = (url,method,textToSendInForPostReq) => {
       // setTasks(loadedTasks);
     } catch (err) {
       setError(err.message || "Something went wrong!");
-      setIsLoading(false);
+      //setIsLoading(false);
     }
-    //setIsLoading(false);
-    };
+    setIsLoading(false);
+  }, [body, changeDataViaFn, method, url]);
+  return { fetchData, error, isLoading, apiData };
+};
 
-    fetchData();
-  },[method, textToSendInForPostReq, url]);
+export default useAxiosApi;
+// try code
+//     if(getReq)
+//     {
+//         const response = await fetch("https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json");
+//     }
+//     else {
+//   const response = await fetch(
+//     "https://react-tasks-http-custom-hook-default-rtdb.firebaseio.com//tasks.json",
+//     {
+//         requestInfoObj
+//     }
+//   )
+// }
+// const response = await axios({
+//     method: method,
+//     url: url,
+//     data: textToSendInForPostReq
+// });
+//   console.log(response);
+// if (response.status !== 200) {
+//   throw new Error('Request failed!');
+// }
+//const data = await response.json();
+//, [requestConfig.url,requestConfig.headers,requestConfig.method,requestConfig.body]);
+
+//fetchData();
+//},[changeDataViaFn, requestConfig.body, requestConfig.headers, requestConfig.method, requestConfig.url]);
 
 //   useEffect(() => {
 //     testFn();
 //   }, [testFn]);
-  //testFn();
-  //)()
-  //   }, [data, requestInfoObj]);
-  //   useEffect(() => {
-  //       testFn();
-  //   },[testFn]);
+//testFn();
+//)()
+//   }, [data, requestInfoObj]);
+//   useEffect(() => {
+//       testFn();
+//   },[testFn]);
 
-  return { apiData, error, isLoading };
-};
+//return { apiData, error, isLoading };
+//};
 
-export default useAxiosApi;
